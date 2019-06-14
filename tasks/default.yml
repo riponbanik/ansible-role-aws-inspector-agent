@@ -1,0 +1,55 @@
+---
+- name: Show Proxy Status
+  debug:
+    msg: "Use Proxy: http://{{ proxy_host }}:{{ proxy_port }}"
+  when:  use_proxy | bool
+
+- name: Remove Proxy Config
+  file:
+    path: /etc/init.d/awsagent.env
+    state: absent
+  when: (not use_proxy) | bool
+  notify:
+    - restart awsagent
+
+- name: Set Proxy Config
+  template:
+    src: awsagent.env.j2
+    dest: "/etc/init.d/awsagent.env"
+  when: use_proxy | bool
+  notify:
+     - restart awsagent
+
+- name: Make sure system dependencies are met (libcurl3)
+  package:
+    name: "{{ item }}"
+    state: present
+  ignore_errors: true
+  with_items:
+    - libcurl4
+    - libcurl3
+    - libgcc1
+    - libc6
+    - libstdc++6
+    - libssl1.0.1
+    - libssl1.0.2
+    - libpcap0.8
+
+- name: Download AWS Inspector agent installer.
+  get_url:
+    url: "{{ aws_inspector_url }}"
+    dest: "{{ aws_inspector_installer_dest }}"
+
+- name: Ensure AWS Inspector agent is installed.
+  command: bash "{{ aws_inspector_installer_dest }}" -u "{{ aws_inspector_auto_update | bool | lower }}"
+  args:
+    creates: "/etc/init.d/awsagent"
+  when: not aws_inspector_role_test_mode
+
+- name: Ensure awsagent service is running.
+  service:
+    name: "{{ aws_inspector_service_name }}"
+    state: "{{ awsagent_state }}"
+    enabled: true
+  when: not aws_inspector_role_test_mode
+

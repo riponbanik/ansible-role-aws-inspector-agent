@@ -1,0 +1,8 @@
+---
+aws_inspector_url: "https://inspector-agent.amazonaws.com/windows/installer/latest/AWSAgentInstall.exe"
+aws_inspector_installer_dest: 'c:/windows/temp/aws_inspector_agent_installer.exe'
+aws_inspector_service_name: 'AWS Agent Service'
+
+awsagent_state: started
+awsagent_enabled: true
+aws_inspector_role_test_mode: false
