@@ -6,7 +6,7 @@ galaxy_info:
   description: AWS Inspector installation for Linux and Windows.
   company: "Lyrics Pvt Ltd"
   license: "license (BSD, MIT)"
-  min_ansible_version: 2.0
+  min_ansible_version: 2.8
   platforms:
     - name: EL
       versions:
